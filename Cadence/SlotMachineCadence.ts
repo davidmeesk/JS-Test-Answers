@@ -81,8 +81,39 @@ const slotMachineCadences: RoundsCadences = { roundOne: [], roundTwo: [], roundT
  * @returns SlotCadence Array of numbers representing the slot machine stop cadence.
  */
 function slotCadence(symbols: Array<SlotCoordinate>): SlotCadence {
-  // Magic
-  return [];
+
+  //Iterates over the special symbols to determine how many symbols are in each column
+  let specialSymbolsInColumn:number[] = Array<number>(anticipatorConfig.columnSize).fill(0);
+  for(let symbolIndex = 0; symbolIndex < symbols.length; symbolIndex ++){
+    specialSymbolsInColumn[symbols[symbolIndex].column] += 1;
+  }
+
+  //Builds the cadence array
+  let cadence:number[] = [];
+  let isAnticipating:Boolean = false;
+  for(let columnIndex=0; columnIndex < anticipatorConfig.columnSize; columnIndex++){
+
+    //Sets the cadence for the current column
+    if(cadence.length === 0){
+      cadence.push(0);
+    }else if(isAnticipating){
+      cadence.push(cadence[cadence.length-1] + anticipatorConfig.anticipateCadence);
+    } else{
+      cadence.push(cadence[cadence.length-1] + anticipatorConfig.defaultCadence);
+    }
+
+    //Sets the anticipation for the next column
+    if(!isAnticipating){
+      if(specialSymbolsInColumn[columnIndex] >= anticipatorConfig.minToAnticipate){
+        isAnticipating = true;
+      }
+    } else if ((specialSymbolsInColumn[columnIndex] > 0) && (specialSymbolsInColumn[columnIndex] <= anticipatorConfig.maxToAnticipate)){
+      isAnticipating = false
+    }
+
+
+  }
+  return cadence;
 }
 
 /**
