@@ -14,20 +14,27 @@ function call(lines: number[]): WinningCombinationsResult {
       symbolCombinationLocation.push(symbolIndex);
     }
     else{
+      //Tests if repeated symbols should be added to results
       if((symbolCombinationLocation.length >= 3) && (repeatedSymbol != 0) && (repeatedSymbol < 10)){
+        //Adds repeated symbol combination to results
         result.push([repeatedSymbol,symbolCombinationLocation]);
       }
+      //If a symbol combination starts with wild symbols, this will make sure the are added to the combination
       symbolCombinationLocation = wilds;
+      //Adds first symbol of the combination
       symbolCombinationLocation.push(symbolIndex);
     }
+    //Keeps track of the wild symbols for the next combination
     if(lines[symbolIndex] === 0){
       wilds.push(symbolIndex)
     }
     else{
       wilds = [];
-      repeatedSymbol = lines[symbolIndex] ;
+      //Saves the symbol that is being repeated
+      repeatedSymbol = lines[symbolIndex];
     }
   }
+  //Adds combination to the result if the line ends
   if(symbolCombinationLocation.length >= 3){
     result.push([repeatedSymbol,Object.assign([], symbolCombinationLocation)]);
   }
